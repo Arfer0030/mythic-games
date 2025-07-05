@@ -223,6 +223,52 @@
     </div>
 
     <script>
+        // Form submission handling
+        document.getElementById('editGameForm').addEventListener('submit', function(e) {
+            const genreSelects = document.querySelectorAll('select[name="genres[]"]');
+            const screenshotInputs = document.querySelectorAll('input[name="screenshots[]"]');
+            
+            genreSelects.forEach(select => {
+                if (!select.value || select.value.trim() === '') {
+                    select.closest('.flex').remove();
+                }
+            });
+            
+            screenshotInputs.forEach(input => {
+                if (!input.value || input.value.trim() === '') {
+                    input.closest('.flex').remove();
+                }
+            });
+            
+            const remainingGenres = document.querySelectorAll('select[name="genres[]"]');
+            if (remainingGenres.length === 0) {
+                e.preventDefault();
+                alert('Please select at least one genre.');
+                return false;
+            }
+            
+            let hasEmptyGenre = false;
+            remainingGenres.forEach(select => {
+                if (!select.value || select.value.trim() === '') {
+                    hasEmptyGenre = true;
+                }
+            });
+            
+            if (hasEmptyGenre) {
+                e.preventDefault();
+                alert('Please select a value for all genre fields or remove empty ones.');
+                return false;
+            }
+            
+            const updateBtn = document.getElementById('updateBtn');
+            const updateText = document.getElementById('updateText');
+            const updateLoader = document.getElementById('updateLoader');
+            
+            updateBtn.disabled = true;
+            updateText.classList.add('hidden');
+            updateLoader.classList.remove('hidden');
+        });
+    
         function addScreenshot() {
             const container = document.getElementById('screenshots-container');
             const div = document.createElement('div');
@@ -235,17 +281,20 @@
             `;
             container.appendChild(div);
         }
-
+    
         function removeScreenshot(button) {
-            button.parentElement.remove();
+            const container = document.getElementById('screenshots-container');
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+            }
         }
-
+    
         function addGenre() {
             const container = document.getElementById('genres-container');
             const div = document.createElement('div');
             div.className = 'flex gap-2 mb-2';
             div.innerHTML = `
-                <select name="genres[]" class="flex-1 bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select name="genres[]" required class="flex-1 bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">Select Genre</option>
                     <option value="Action">Action</option>
                     <option value="Adventure">Adventure</option>
@@ -262,12 +311,12 @@
             `;
             container.appendChild(div);
         }
-
+    
         function removeGenre(button) {
             const container = document.getElementById('genres-container');
             if (container.children.length > 1) {
                 button.parentElement.remove();
             }
         }
-    </script>
+    </script>    
 </x-app-layout>

@@ -25,12 +25,12 @@ class GameFactory extends Factory
             'discount_price' => $discountPrice,
             'discount_percentage' => $discountPercentage,
             'image_url' => 'https://picsum.photos/800/600?random=' . $this->faker->numberBetween(1, 1000),
-            'screenshots' => json_encode([
+            'screenshots' => [
                 'https://picsum.photos/1920/1080?random=' . $this->faker->numberBetween(1001, 1010),
                 'https://picsum.photos/1920/1080?random=' . $this->faker->numberBetween(1011, 1020),
                 'https://picsum.photos/1920/1080?random=' . $this->faker->numberBetween(1021, 1030),
-            ]),
-            'genres' => json_encode($this->faker->randomElements($genres, $this->faker->numberBetween(1, 3))),
+            ],
+            'genres' => $this->faker->randomElements($genres, $this->faker->numberBetween(1, 3)),
             'developer' => $this->faker->randomElement($developers),
             'publisher' => $this->faker->randomElement($developers),
             'release_date' => $this->faker->dateTimeBetween('-2 years', '+6 months'),
@@ -39,6 +39,7 @@ class GameFactory extends Factory
             'is_featured' => $this->faker->boolean(20),
             'is_new_release' => $this->faker->boolean(15),
             'is_bestseller' => $this->faker->boolean(10),
+            'is_comming_soon' => $this->faker->boolean(10), 
         ];
     }
 }

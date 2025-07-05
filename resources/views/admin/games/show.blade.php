@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="max-w-6xl mx-auto px-6 py-8">
-        <!-- Header -->
+        <!-- Header tetap sama -->
         <div class="mb-8">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center space-x-4">
@@ -58,18 +58,42 @@
                                 BESTSELLER
                             </div>
                         @endif
+                        @if($game->is_comming_soon)
+                            <div class="bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-bold">
+                                COMING SOON
+                            </div>
+                        @endif
                     </div>
                 </div>
 
                 <!-- Screenshots -->
-                @if($game->screenshots && is_array($game->screenshots) && count($game->screenshots) > 0)
+                @php
+                    $screenshots = $game->screenshots;
+                @endphp
+                
+                @if($screenshots && count($screenshots) > 0)
+                    <div class="mb-6">
+                        <h3 class="text-xl font-bold text-white mb-4">Screenshots ({{ count($screenshots) }})</h3>
+                        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                            @foreach($screenshots as $index => $screenshot)
+                                @if(!empty(trim($screenshot)))
+                                    <div class="relative">
+                                        <img src="{{ $screenshot }}" alt="Screenshot {{ $index + 1 }}" 
+                                             class="w-full h-32 object-cover rounded-lg hover:scale-105 transition-transform cursor-pointer"
+                                             onerror="this.parentElement.style.display='none'">
+                                        <div class="absolute top-2 left-2 bg-black/50 text-white px-2 py-1 rounded text-xs">
+                                            {{ $index + 1 }}
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                @else
                     <div class="mb-6">
                         <h3 class="text-xl font-bold text-white mb-4">Screenshots</h3>
-                        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                            @foreach($game->screenshots as $screenshot)
-                                <img src="{{ $screenshot }}" alt="Screenshot" 
-                                     class="w-full h-32 object-cover rounded-lg hover:scale-105 transition-transform cursor-pointer">
-                            @endforeach
+                        <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 text-center">
+                            <p class="text-gray-400">No screenshots available</p>
                         </div>
                     </div>
                 @endif
@@ -100,13 +124,21 @@
                     </div>
 
                     <!-- Genres -->
+                    @php
+                        $genres = $game->genres;
+                    @endphp
+                    
                     <div class="mb-4">
                         <span class="text-gray-400 text-sm">Genres:</span>
                         <div class="flex flex-wrap gap-2 mt-1">
-                            @if(is_array($game->genres))
-                                @foreach($game->genres as $genre)
-                                    <span class="bg-blue-600/20 text-blue-300 px-3 py-1 rounded-full text-sm">{{ $genre }}</span>
+                            @if($genres && count($genres) > 0)
+                                @foreach($genres as $genre)
+                                    @if(!empty(trim($genre)))
+                                        <span class="bg-blue-600/20 text-blue-300 px-3 py-1 rounded-full text-sm">{{ $genre }}</span>
+                                    @endif
                                 @endforeach
+                            @else
+                                <span class="text-gray-500 text-sm">No genres specified</span>
                             @endif
                         </div>
                     </div>
@@ -198,10 +230,10 @@
                             </span>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-gray-400">Comming Soon:</span>
+                            <span class="text-gray-400">Coming Soon:</span>
                             <span class="text-white">
                                 @if($game->is_comming_soon)
-                                    <span class="bg-yellow-600 text-black px-2 py-1 rounded text-xs">Yes</span>
+                                    <span class="bg-purple-600 text-white px-2 py-1 rounded text-xs">Yes</span>
                                 @else
                                     <span class="bg-gray-600 text-white px-2 py-1 rounded text-xs">No</span>
                                 @endif

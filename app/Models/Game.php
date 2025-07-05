@@ -58,7 +58,6 @@ class Game extends Model
         return $this->discount_price !== null;
     }
 
-    // Tambahkan accessor untuk memastikan genres selalu array
     public function getScreenshotsAttribute($value)
     {
         if (is_string($value)) {
@@ -75,6 +74,26 @@ class Game extends Model
             return is_array($decoded) ? $decoded : [];
         }
         return is_array($value) ? $value : [];
+    }
+
+    // Mutator untuk screenshots
+    public function setScreenshotsAttribute($value)
+    {
+        if (is_array($value)) {
+            $this->attributes['screenshots'] = json_encode(array_filter($value));
+        } else {
+            $this->attributes['screenshots'] = $value;
+        }
+    }
+
+    // Mutator untuk genres
+    public function setGenresAttribute($value)
+    {
+        if (is_array($value)) {
+            $this->attributes['genres'] = json_encode(array_filter($value));
+        } else {
+            $this->attributes['genres'] = $value;
+        }
     }
 
     public function scopeSearch($query, $search)
