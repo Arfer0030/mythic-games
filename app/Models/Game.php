@@ -58,12 +58,22 @@ class Game extends Model
     }
 
     // Tambahkan accessor untuk memastikan genres selalu array
+    public function getScreenshotsAttribute($value)
+    {
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            return is_array($decoded) ? $decoded : [];
+        }
+        return is_array($value) ? $value : [];
+    }
+
     public function getGenresAttribute($value)
     {
         if (is_string($value)) {
-            return json_decode($value, true) ?? [];
+            $decoded = json_decode($value, true);
+            return is_array($decoded) ? $decoded : [];
         }
-        return $value ?? [];
+        return is_array($value) ? $value : [];
     }
 
     public function scopeSearch($query, $search)

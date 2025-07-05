@@ -10,33 +10,35 @@
                 </div>
                 <div class="space-y-4">
                     @foreach($newReleases->take(3) as $game)
-                        <div class="flex items-center space-x-4 p-3 bg-gray-700/30 rounded-lg hover:bg-gray-600/40 transition-colors cursor-pointer">
-                            <img src="{{ $game->image_url }}" alt="{{ $game->title }}" class="w-16 h-16 rounded-lg object-cover">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-white font-semibold text-base mb-1 truncate">{{ $game->title }}</h4>
-                                <p class="text-gray-400 text-sm mb-2">{{ $game->release_date->format('M d, Y') }}</p>
-                                <div class="flex items-center justify-between">
-                                    @if($game->hasDiscount())
-                                        <div class="flex items-center space-x-2">
-                                            <span class="text-green-400 font-bold">{{ $game->formatted_discount_price }}</span>
-                                            <span class="text-gray-400 line-through text-sm">{{ $game->formatted_price }}</span>
-                                        </div>
-                                    @else
-                                        <span class="text-white font-bold">{{ $game->formatted_price }}</span>
-                                    @endif
+                        <a href="{{ route('games.show', $game) }}" class="flex items-center space-x-4 p-3 bg-gray-700/30 rounded-lg hover:bg-gray-600/40 transition-colors cursor-pointer">
+                            <div class="flex items-center space-x-4 p-3">
+                                <img src="{{ $game->image_url }}" alt="{{ $game->title }}" class="w-16 h-16 rounded-lg object-cover">
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-white font-semibold text-base mb-1 truncate">{{ $game->title }}</h4>
+                                    <p class="text-gray-400 text-sm mb-2">{{ $game->release_date->format('M d, Y') }}</p>
+                                    <div class="flex items-center justify-between">
+                                        @if($game->hasDiscount())
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-green-400 font-bold">{{ $game->formatted_discount_price }}</span>
+                                                <span class="text-gray-400 line-through text-sm">{{ $game->formatted_price }}</span>
+                                            </div>
+                                        @else
+                                            <span class="text-white font-bold">{{ $game->formatted_price }}</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
             </div>
 
             <!-- Center: Best Seller #1 Banner -->
-            <div class="relative h-100 rounded-xl overflow-hidden">
+            <a href="{{ route('games.show', $bestsellers->first()) }}" class="block relative h-100 rounded-xl overflow-hidden hover:transform hover:scale-105 transition-all duration-300">
                 @if($bestsellers->count() > 0)
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10"></div>
                     <img src="{{ $bestsellers->first()->image_url }}" alt="{{ $bestsellers->first()->title }}" 
-                         class="w-full h-full object-cover">
+                        class="w-full h-full object-cover">
                     <div class="absolute inset-0 z-20 flex flex-col justify-end p-8">
                         <div class="mb-3">
                             <span class="bg-yellow-500 text-black px-4 py-2 rounded-full text-sm font-bold">
@@ -68,7 +70,7 @@
                         </div>
                     </div>
                 @endif
-            </div>
+            </a>
 
             <!-- Right: Coming Soon -->
             <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6">
@@ -78,23 +80,25 @@
                 </div>
                 <div class="space-y-4">
                     @foreach($commingSoon->take(3) as $game)
-                        <div class="flex items-center space-x-4 p-3 bg-gray-700/30 rounded-lg hover:bg-gray-600/40 transition-colors cursor-pointer">
-                            <img src="{{ $game->image_url }}" alt="{{ $game->title }}" class="w-16 h-16 rounded-lg object-cover">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-white font-semibold text-base mb-1 truncate">{{ $game->title }}</h4>
-                                <p class="text-blue-400 text-sm mb-2 font-medium">Coming Soon</p>
-                                <div class="flex items-center justify-between">
-                                    @if($game->hasDiscount())
-                                        <div class="flex items-center space-x-2">
-                                            <span class="text-green-400 font-bold">{{ $game->formatted_discount_price }}</span>
-                                            <span class="text-gray-400 line-through text-sm">{{ $game->formatted_price }}</span>
-                                        </div>
-                                    @else
-                                        <span class="text-white font-bold">{{ $game->formatted_price }}</span>
-                                    @endif
+                        <a href="{{ route('games.show', $game) }}" class="flex items-center space-x-4 p-3 bg-gray-700/30 rounded-lg hover:bg-gray-600/40 transition-colors cursor-pointer">
+                            <div class="flex items-center space-x-4 p-3">
+                                <img src="{{ $game->image_url }}" alt="{{ $game->title }}" class="w-16 h-16 rounded-lg object-cover">
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-white font-semibold text-base mb-1 truncate">{{ $game->title }}</h4>
+                                    <p class="text-blue-400 text-sm mb-2 font-medium">Coming Soon</p>
+                                    <div class="flex items-center justify-between">
+                                        @if($game->hasDiscount())
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-green-400 font-bold">{{ $game->formatted_discount_price }}</span>
+                                                <span class="text-gray-400 line-through text-sm">{{ $game->formatted_price }}</span>
+                                            </div>
+                                        @else
+                                            <span class="text-white font-bold">{{ $game->formatted_price }}</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
             </div>
@@ -110,31 +114,33 @@
                 </div>
                 <div class="grid grid-cols-1 gap-4">
                     @foreach($featuredGames->take(4) as $game)
-                        <div class="bg-gray-700/30 rounded-lg p-4 hover:bg-gray-600/40 transition-colors cursor-pointer">
-                            <div class="flex items-center space-x-4">
-                                <img src="{{ $game->image_url }}" alt="{{ $game->title }}" class="w-20 h-20 rounded-lg object-cover">
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-white font-semibold text-base mb-2 truncate">{{ $game->title }}</h4>
-                                    <div class="flex flex-wrap gap-1 mb-2">
-                                        @if(is_array($game->genres))
-                                            @foreach(array_slice($game->genres, 0, 2) as $genre)
-                                                <span class="bg-blue-600/20 text-blue-300 px-2 py-1 rounded text-xs">{{ $genre }}</span>
-                                            @endforeach
-                                        @endif
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        @if($game->hasDiscount())
-                                            <div class="flex items-center space-x-2">
-                                                <span class="text-green-400 font-bold">{{ $game->formatted_discount_price }}</span>
-                                                <span class="text-gray-400 line-through text-sm">{{ $game->formatted_price }}</span>
-                                            </div>
-                                        @else
-                                            <span class="text-white font-bold">{{ $game->formatted_price }}</span>
-                                        @endif
+                        <a href="{{ route('games.show', $game) }}" class="bg-gray-700/30 rounded-lg p-4 hover:bg-gray-600/40 transition-colors cursor-pointer">
+                            <div class="p-4 ">
+                                <div class="flex items-center space-x-4">
+                                    <img src="{{ $game->image_url }}" alt="{{ $game->title }}" class="w-20 h-20 rounded-lg object-cover">
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="text-white font-semibold text-base mb-2 truncate">{{ $game->title }}</h4>
+                                        <div class="flex flex-wrap gap-1 mb-2">
+                                            @if(is_array($game->genres))
+                                                @foreach(array_slice($game->genres, 0, 2) as $genre)
+                                                    <span class="bg-blue-600/20 text-blue-300 px-2 py-1 rounded text-xs">{{ $genre }}</span>
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            @if($game->hasDiscount())
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="text-green-400 font-bold">{{ $game->formatted_discount_price }}</span>
+                                                    <span class="text-gray-400 line-through text-sm">{{ $game->formatted_price }}</span>
+                                                </div>
+                                            @else
+                                                <span class="text-white font-bold">{{ $game->formatted_price }}</span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
             </div>
@@ -147,33 +153,35 @@
                 </div>
                 <div class="grid grid-cols-1 gap-4">
                     @foreach($bestsellers->skip(1)->take(4) as $game)
-                        <div class="bg-gray-700/30 rounded-lg p-4 hover:bg-gray-600/40 transition-colors cursor-pointer">
-                            <div class="flex items-center space-x-4">
-                                <img src="{{ $game->image_url }}" alt="{{ $game->title }}" class="w-20 h-20 rounded-lg object-cover">
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-white font-semibold text-base mb-2 truncate">{{ $game->title }}</h4>
-                                    <div class="flex items-center space-x-2 mb-2">
-                                        <div class="flex items-center space-x-1">
-                                            <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                                            </svg>
-                                            <span class="text-gray-300 text-sm">{{ $game->user_rating }}</span>
-                                        </div>
-                                        <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">BESTSELLER</span>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        @if($game->hasDiscount())
-                                            <div class="flex items-center space-x-2">
-                                                <span class="text-green-400 font-bold">{{ $game->formatted_discount_price }}</span>
-                                                <span class="text-gray-400 line-through text-sm">{{ $game->formatted_price }}</span>
+                        <a href="{{ route('games.show', $game) }}" class="bg-gray-700/30 rounded-lg p-4 hover:bg-gray-600/40 transition-colors cursor-pointer">
+                            <div class="p-4">
+                                <div class="flex items-center space-x-4">
+                                    <img src="{{ $game->image_url }}" alt="{{ $game->title }}" class="w-20 h-20 rounded-lg object-cover">
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="text-white font-semibold text-base mb-2 truncate">{{ $game->title }}</h4>
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <div class="flex items-center space-x-1">
+                                                <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                                </svg>
+                                                <span class="text-gray-300 text-sm">{{ $game->user_rating }}</span>
                                             </div>
-                                        @else
-                                            <span class="text-white font-bold">{{ $game->formatted_price }}</span>
-                                        @endif
+                                            <span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">BESTSELLER</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            @if($game->hasDiscount())
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="text-green-400 font-bold">{{ $game->formatted_discount_price }}</span>
+                                                    <span class="text-gray-400 line-through text-sm">{{ $game->formatted_price }}</span>
+                                                </div>
+                                            @else
+                                                <span class="text-white font-bold">{{ $game->formatted_price }}</span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
             </div>
@@ -186,26 +194,28 @@
                 </div>
                 <div class="grid grid-cols-1 gap-4">
                     @foreach($discountedGames->take(4) as $game)
-                        <div class="bg-gray-700/30 rounded-lg p-4 hover:bg-gray-600/40 transition-colors cursor-pointer relative">
-                            @if($game->discount_percentage)
-                                <div class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-bold z-10">
-                                    -{{ $game->discount_percentage }}%
-                                </div>
-                            @endif
-                            <div class="flex items-center space-x-4">
-                                <img src="{{ $game->image_url }}" alt="{{ $game->title }}" class="w-20 h-20 rounded-lg object-cover">
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-white font-semibold text-base mb-2 truncate">{{ $game->title }}</h4>
-                                    <div class="flex items-center space-x-2 mb-2">
-                                        <span class="bg-green-600/20 text-green-300 px-2 py-1 rounded text-xs">LIMITED OFFER</span>
+                        <a href="{{ route('games.show', $game) }}" class="bg-gray-700/30 rounded-lg p-4 hover:bg-gray-600/40 transition-colors cursor-pointer relative">
+                            <div class="p-4 relative">
+                                @if($game->discount_percentage)
+                                    <div class="absolute top-2 right-0 bg-green-500 text-white px-2 py-1 rounded text-xs font-bold z-10">
+                                        -{{ $game->discount_percentage }}%
                                     </div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="text-green-400 font-bold">{{ $game->formatted_discount_price }}</span>
-                                        <span class="text-gray-400 line-through text-sm">{{ $game->formatted_price }}</span>
+                                @endif
+                                <div class="flex items-center space-x-4">
+                                    <img src="{{ $game->image_url }}" alt="{{ $game->title }}" class="w-20 h-20 rounded-lg object-cover">
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="text-white font-semibold text-base mb-2 truncate">{{ $game->title }}</h4>
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <span class="bg-green-600/20 text-green-300 px-2 py-1 rounded text-xs">LIMITED OFFER</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-green-400 font-bold">{{ $game->formatted_discount_price }}</span>
+                                            <span class="text-gray-400 line-through text-sm">{{ $game->formatted_price }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     @endforeach
                 </div>
             </div>

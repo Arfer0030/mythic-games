@@ -141,6 +141,7 @@
                 <!-- Games Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     @forelse($games as $game)
+                    <a href="{{ route('games.show', $game) }}" class="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden hover:transform hover:scale-105 transition-all duration-300 cursor-pointer">
                         <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden hover:transform hover:scale-105 transition-all duration-300 cursor-pointer">
                             <div class="relative">
                                 <img src="{{ $game->image_url }}" alt="{{ $game->title }}" class="w-full h-48 object-cover">
@@ -202,6 +203,7 @@
                                 </div>
                             </div>
                         </div>
+                    </a>
                     @empty
                         <div class="col-span-full text-center py-12">
                             <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
