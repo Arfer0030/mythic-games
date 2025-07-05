@@ -40,6 +40,7 @@ class Game extends Model
         'is_featured' => 'boolean',
         'is_new_release' => 'boolean',
         'is_bestseller' => 'boolean',
+        'is_comming_soon' => 'boolean',
     ];
 
     public function getFormattedPriceAttribute()

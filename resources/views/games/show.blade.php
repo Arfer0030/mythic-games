@@ -161,6 +161,12 @@
                                 <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">NEW RELEASE</span>
                             </div>
                         @endif
+                        @if($game->is_comming_soon)
+                            <div class="flex justify-between">
+                                <span class="text-gray-400">Status:</span>
+                                <span class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">COMMING SOON</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
