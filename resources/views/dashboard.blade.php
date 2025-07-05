@@ -64,7 +64,8 @@
                             @else
                                 <span class="text-2xl font-bold text-white">{{ $bestsellers->first()->formatted_price }}</span>
                             @endif
-                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                            <button onclick="addToCart({{ $bestsellers->first()->id }})" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
                                 Add to Cart
                             </button>
                         </div>

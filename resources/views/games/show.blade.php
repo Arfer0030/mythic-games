@@ -120,9 +120,11 @@
                         </div>
 
                         <div class="space-y-3">
-                            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                            <button onclick="addToCart({{ $game->id }})" 
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
                                 Add to Cart
                             </button>
+                        
                         </div>
                     </div>
                 </div>

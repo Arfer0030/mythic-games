@@ -45,4 +45,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    public function unpaidCarts()
+    {
+        return $this->hasMany(Cart::class)->where('is_paid', false);
+    }
+
+    public function getCartCountAttribute()
+    {
+        return $this->unpaidCarts()->count();
+    }
+
 }
