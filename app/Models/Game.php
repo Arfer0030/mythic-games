@@ -65,4 +65,10 @@ class Game extends Model
         }
         return $value ?? [];
     }
+
+    public function scopeSearch($query, $search)
+    {
+        return $query->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
+    }
 }
