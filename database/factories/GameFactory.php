@@ -12,7 +12,7 @@ class GameFactory extends Factory
         $developers = ['Mythic Studios', 'Epic Games', 'Valve Corporation', 'Ubisoft', 'EA Games', 'Activision', 'Bethesda'];
         $ratings = ['E', 'T', 'M'];
         
-        $price = $this->faker->randomFloat(2, 9.99, 59.99);
+        $price = $this->faker->randomFloat(2, 10000, 1000000);
         $hasDiscount = $this->faker->boolean(30);
         $discountPercentage = $hasDiscount ? $this->faker->numberBetween(10, 75) : null;
         $discountPrice = $hasDiscount ? $price * (1 - $discountPercentage / 100) : null;

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 // Redirect root ke login jika belum authenticated
 Route::get('/', function () {
-    return redirect()->route('login');
+    return redirect()->route('register');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

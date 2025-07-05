@@ -27,11 +27,12 @@ class Game extends Model
         'is_featured',
         'is_new_release',
         'is_bestseller',
+        'is_comming_soon',  
     ];
 
     protected $casts = [
         'screenshots' => 'array',
-        'genres' => 'array',  // Pastikan ini ada
+        'genres' => 'array',  
         'release_date' => 'date',
         'price' => 'decimal:2',
         'discount_price' => 'decimal:2',

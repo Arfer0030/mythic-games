@@ -27,5 +27,9 @@ class GameSeeder extends Seeder
             'is_bestseller' => true,
             'user_rating' => rand(45, 50) / 10,
         ]);
+
+        Game::factory(5)->create([
+            'is_comming_soon' => true,
+        ]);
     }
 }

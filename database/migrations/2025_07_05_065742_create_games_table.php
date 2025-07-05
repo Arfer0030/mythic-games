@@ -27,6 +27,7 @@ return new class extends Migration
             $table->boolean('is_featured')->default(false);
             $table->boolean('is_new_release')->default(false);
             $table->boolean('is_bestseller')->default(false);
+            $table->boolean('is_comming_soon')->default(false);
             $table->timestamps();
         });
     }
