@@ -12,7 +12,7 @@ class CartController extends Controller
 {
     public function index()
     {
-        $cartItems = Auth::user()->unpaidCarts()->with('game')->get();
+        $cartItems = Auth::user()->unpaidCarts;
         $total = $cartItems->sum('final_price');
         
         return view('cart.index', compact('cartItems', 'total'));
