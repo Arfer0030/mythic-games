@@ -15,7 +15,7 @@
 
         <!-- Form -->
         <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-8">
-            <form method="POST" action="{{ route('admin.games.store') }}" class="space-y-6">
+            <form method="POST" action="{{ route('admin.games.store') }}" class="space-y-6" enctype="multipart/form-data">
                 @csrf
 
                 <!-- Basic Information -->
@@ -112,29 +112,66 @@
 
                 <!-- Media -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Main Image URL *</label>
-                    <input type="url" name="image_url" value="{{ old('image_url') }}" required
-                           class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('image_url') border-red-500 @enderror"
-                           placeholder="https://example.com/image.jpg">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Main Image *</label>
+                    
+                    <div class="space-y-4">
+                        <!-- File Upload Option -->
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Upload Image File</label>
+                            <input type="file" name="main_image" accept="image/*"
+                                   class="block w-full text-sm text-gray-300 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <p class="text-gray-400 text-xs mt-1">JPG, PNG, GIF up to 2MB</p>
+                        </div>
+                        
+                        <!-- URL Option -->
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Or Provide Image URL</label>
+                            <input type="url" name="image_url" value="{{ old('image_url') }}" 
+                                   class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="https://example.com/image.jpg">
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-xs mt-2">Upload a file or provide a URL (at least one is required)</p>
+                    @error('main_image')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                     @error('image_url')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
-
-                <!-- Screenshots -->
+            
+                <!-- Screenshots Section -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Screenshots URLs</label>
-                    <div id="screenshots-container">
-                        <div class="flex gap-2 mb-2">
-                            <input type="url" name="screenshots[]" value="{{ old('screenshots.0') }}"
-                                   class="flex-1 bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                   placeholder="https://example.com/screenshot1.jpg">
-                            <button type="button" onclick="removeScreenshot(this)" class="bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg">Remove</button>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Screenshots</label>
+                    
+                    <div class="space-y-4">
+                        <!-- File Upload Option -->
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Upload Screenshot Files</label>
+                            <input type="file" name="screenshot_files[]" accept="image/*" multiple
+                                   class="block w-full text-sm text-gray-300 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <p class="text-gray-400 text-xs mt-1">Select multiple images (Ctrl/Cmd + click)</p>
+                        </div>
+            
+                        <!-- URL Option -->
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Or Add Screenshot URLs</label>
+                            <div id="screenshots-container">
+                                <div class="flex gap-2 mb-2">
+                                    <input type="url" name="screenshots[]" value="{{ old('screenshots.0') }}"
+                                           class="flex-1 bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                           placeholder="https://example.com/screenshot1.jpg">
+                                    <button type="button" onclick="removeScreenshot(this)" class="bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg">Remove</button>
+                                </div>
+                            </div>
+                            <button type="button" onclick="addScreenshot()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
+                                Add Screenshot URL
+                            </button>
                         </div>
                     </div>
-                    <button type="button" onclick="addScreenshot()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
-                        Add Screenshot
-                    </button>
+                    @error('screenshot_files.*')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Genres -->
@@ -223,50 +260,55 @@
     </div>
 
     <script>
-        // Form submission handling
-        document.getElementById('editGameForm').addEventListener('submit', function(e) {
-            const genreSelects = document.querySelectorAll('select[name="genres[]"]');
-            const screenshotInputs = document.querySelectorAll('input[name="screenshots[]"]');
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
             
-            genreSelects.forEach(select => {
-                if (!select.value || select.value.trim() === '') {
-                    select.closest('.flex').remove();
+            form.addEventListener('submit', function(e) {
+                const genreSelects = document.querySelectorAll('select[name="genres[]"]');
+                const screenshotInputs = document.querySelectorAll('input[name="screenshots[]"]');
+                
+                genreSelects.forEach(select => {
+                    if (!select.value || select.value.trim() === '') {
+                        select.closest('.flex').remove();
+                    }
+                });
+                
+                screenshotInputs.forEach(input => {
+                    if (!input.value || input.value.trim() === '') {
+                        input.closest('.flex').remove();
+                    }
+                });
+                
+                const remainingGenres = document.querySelectorAll('select[name="genres[]"]');
+                if (remainingGenres.length === 0) {
+                    e.preventDefault();
+                    alert('Please select at least one genre.');
+                    return false;
+                }
+                
+                let hasEmptyGenre = false;
+                remainingGenres.forEach(select => {
+                    if (!select.value || select.value.trim() === '') {
+                        hasEmptyGenre = true;
+                    }
+                });
+                
+                if (hasEmptyGenre) {
+                    e.preventDefault();
+                    alert('Please select a value for all genre fields or remove empty ones.');
+                    return false;
+                }
+                
+                const submitBtn = document.getElementById('submitBtn');
+                const submitText = document.getElementById('submitText');
+                const submitLoader = document.getElementById('submitLoader');
+                
+                if (submitBtn && submitText && submitLoader) {
+                    submitBtn.disabled = true;
+                    submitText.classList.add('hidden');
+                    submitLoader.classList.remove('hidden');
                 }
             });
-            
-            screenshotInputs.forEach(input => {
-                if (!input.value || input.value.trim() === '') {
-                    input.closest('.flex').remove();
-                }
-            });
-            
-            const remainingGenres = document.querySelectorAll('select[name="genres[]"]');
-            if (remainingGenres.length === 0) {
-                e.preventDefault();
-                alert('Please select at least one genre.');
-                return false;
-            }
-            
-            let hasEmptyGenre = false;
-            remainingGenres.forEach(select => {
-                if (!select.value || select.value.trim() === '') {
-                    hasEmptyGenre = true;
-                }
-            });
-            
-            if (hasEmptyGenre) {
-                e.preventDefault();
-                alert('Please select a value for all genre fields or remove empty ones.');
-                return false;
-            }
-            
-            const updateBtn = document.getElementById('updateBtn');
-            const updateText = document.getElementById('updateText');
-            const updateLoader = document.getElementById('updateLoader');
-            
-            updateBtn.disabled = true;
-            updateText.classList.add('hidden');
-            updateLoader.classList.remove('hidden');
         });
     
         function addScreenshot() {
@@ -283,10 +325,7 @@
         }
     
         function removeScreenshot(button) {
-            const container = document.getElementById('screenshots-container');
-            if (container.children.length > 1) {
-                button.parentElement.remove();
-            }
+            button.parentElement.remove();
         }
     
         function addGenre() {
@@ -318,5 +357,5 @@
                 button.parentElement.remove();
             }
         }
-    </script>    
+    </script>       
 </x-app-layout>

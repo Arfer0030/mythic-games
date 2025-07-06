@@ -31,17 +31,9 @@
             </div>
         @endif
 
-        <!-- Debug Info (hapus setelah selesai) -->
-        <div class="bg-blue-600 text-white p-4 rounded-lg mb-6">
-            <p><strong>Debug Info:</strong></p>
-            <p>Game ID: {{ $game->id }}</p>
-            <p>Update Route: {{ route('admin.games.update', $game) }}</p>
-            <p>Current URL: {{ url()->current() }}</p>
-        </div>
-
         <!-- Form -->
         <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-8">
-            <form method="POST" action="{{ route('admin.games.update', $game) }}" class="space-y-6" id="editGameForm">
+            <form method="POST" action="{{ route('admin.games.update', $game) }}" class="space-y-6" id="editGameForm" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -137,39 +129,96 @@
                     </div>
                 </div>
 
-                <!-- Media -->
+                <!-- Main Image Section -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Main Image URL *</label>
-                    <input type="url" name="image_url" value="{{ old('image_url', $game->image_url) }}" required
-                           class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('image_url') border-red-500 @enderror"
-                           placeholder="https://example.com/image.jpg">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Main Image *</label>
+                    
+                    <!-- Current Image Preview -->
+                    @if($game->image_url)
+                        <div class="mb-4">
+                            <label class="block text-sm text-gray-400 mb-2">Current Image</label>
+                            <img src="{{ $game->image_url }}" alt="Current image" class="w-32 h-32 object-cover rounded-lg">
+                        </div>
+                    @endif
+            
+                    <div class="space-y-4">
+                        <!-- File Upload Option -->
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Upload New Image</label>
+                            <input type="file" name="main_image" accept="image/*"
+                                   class="block w-full text-sm text-gray-300 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <p class="text-gray-400 text-xs mt-1">JPG, PNG, GIF up to 2MB</p>
+                        </div>
+                        
+                        <!-- URL Option -->
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Or Update Image URL</label>
+                            <input type="url" name="image_url" value="{{ old('image_url', $game->image_url) }}" 
+                                   class="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="https://example.com/image.jpg">
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-xs mt-2">Upload a new file or update URL. Leave both empty to keep current image.</p>
+                    @error('main_image')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                     @error('image_url')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
-
-                <!-- Screenshots -->
+            
+                <!-- Screenshots Section -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Screenshots URLs</label>
-                    <div id="screenshots-container">
-                        @php
-                            $screenshots = old('screenshots', $game->screenshots ?? []);
-                            if (empty($screenshots)) {
-                                $screenshots = [''];
-                            }
-                        @endphp
-                        @foreach($screenshots as $index => $screenshot)
-                            <div class="flex gap-2 mb-2">
-                                <input type="url" name="screenshots[]" value="{{ $screenshot }}"
-                                       class="flex-1 bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                       placeholder="https://example.com/screenshot.jpg">
-                                <button type="button" onclick="removeScreenshot(this)" class="bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg">Remove</button>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Screenshots</label>
+                    
+                    <!-- Current Screenshots -->
+                    @if($game->screenshots && count($game->screenshots) > 0)
+                        <div class="mb-4">
+                            <label class="block text-sm text-gray-400 mb-2">Current Screenshots</label>
+                            <div class="grid grid-cols-4 gap-2">
+                                @foreach($game->screenshots as $screenshot)
+                                    <img src="{{ $screenshot }}" alt="Screenshot" class="w-20 h-20 object-cover rounded">
+                                @endforeach
                             </div>
-                        @endforeach
+                        </div>
+                    @endif
+                    
+                    <div class="space-y-4">
+                        <!-- File Upload Option -->
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Upload New Screenshots</label>
+                            <input type="file" name="screenshot_files[]" accept="image/*" multiple
+                                   class="block w-full text-sm text-gray-300 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <p class="text-gray-400 text-xs mt-1">Select multiple images (Ctrl/Cmd + click). Will replace current screenshots.</p>
+                        </div>
+                
+                        <!-- URL Option -->
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Or Update Screenshot URLs</label>
+                            <div id="screenshots-container">
+                                @php
+                                    $screenshots = old('screenshots', $game->screenshots ?? []);
+                                    if (empty($screenshots)) {
+                                        $screenshots = [''];
+                                    }
+                                @endphp
+                                @foreach($screenshots as $index => $screenshot)
+                                    <div class="flex gap-2 mb-2">
+                                        <input type="url" name="screenshots[]" value="{{ $screenshot }}"
+                                               class="flex-1 bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                               placeholder="https://example.com/screenshot.jpg">
+                                        <button type="button" onclick="removeScreenshot(this)" class="bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg">Remove</button>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <button type="button" onclick="addScreenshot()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
+                                Add Screenshot URL
+                            </button>
+                        </div>
                     </div>
-                    <button type="button" onclick="addScreenshot()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
-                        Add Screenshot
-                    </button>
+                    @error('screenshot_files.*')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Genres -->
@@ -326,10 +375,7 @@
         }
     
         function removeScreenshot(button) {
-            const container = document.getElementById('screenshots-container');
-            if (container.children.length > 1) {
-                button.parentElement.remove();
-            }
+            button.parentElement.remove();
         }
     
         function addGenre() {

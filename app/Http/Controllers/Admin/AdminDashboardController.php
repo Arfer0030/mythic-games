@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Game;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AdminDashboardController extends Controller
 {
@@ -37,7 +38,9 @@ class AdminDashboardController extends Controller
                 'short_description' => 'required|string|max:255',
                 'price' => 'required|numeric|min:0',
                 'discount_price' => 'nullable|numeric|min:0',
-                'image_url' => 'required|url',
+                'main_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'image_url' => 'nullable|url',
+                'screenshot_files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'screenshots' => 'nullable|array',
                 'screenshots.*' => 'nullable|string|url',
                 'genres' => 'required|array|min:1',
@@ -49,18 +52,42 @@ class AdminDashboardController extends Controller
                 'user_rating' => 'required|numeric|min:0|max:5',
             ]);
 
-            $screenshots = array_filter($validated['screenshots'] ?? [], function($value) {
-                return !empty(trim($value));
-            });
+            if ($request->hasFile('main_image')) {
+                $path = $request->file('main_image')->store('games', 'public');
+                $validated['image_url'] = '/uploads/' . $path;
+            } elseif (!$validated['image_url']) {
+                return redirect()->back()
+                               ->withErrors(['image_url' => 'Please provide either an image file or URL.'])
+                               ->withInput();
+            }
+
+            $screenshots = [];
             
+            // Process uploaded files
+            if ($request->hasFile('screenshot_files')) {
+                foreach ($request->file('screenshot_files') as $file) {
+                    $path = $file->store('games/screenshots', 'public');
+                    $screenshots[] = '/uploads/' . $path;
+                }
+            }
+            
+            // Process URL screenshots
+            if ($request->has('screenshots')) {
+                $urlScreenshots = array_filter($validated['screenshots'] ?? [], function($value) {
+                    return !empty(trim($value));
+                });
+                $screenshots = array_merge($screenshots, $urlScreenshots);
+            }
+
+            // Process other data
             $genres = array_filter($validated['genres'], function($value) {
                 return !empty(trim($value));
             });
 
             if (empty($genres)) {
                 return redirect()->back()
-                            ->withErrors(['genres' => 'At least one genre is required.'])
-                            ->withInput();
+                               ->withErrors(['genres' => 'At least one genre is required.'])
+                               ->withInput();
             }
 
             $validated['screenshots'] = array_values($screenshots);
@@ -80,14 +107,11 @@ class AdminDashboardController extends Controller
 
             return redirect()->route('admin.dashboard')->with('success', 'Game created successfully!');
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            DB::rollBack();
-            return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                        ->withErrors(['error' => 'Failed to create game: ' . $e->getMessage()])
-                        ->withInput();
+                           ->withErrors(['error' => 'Failed to create game: ' . $e->getMessage()])
+                           ->withInput();
         }
     }
 
@@ -112,7 +136,9 @@ class AdminDashboardController extends Controller
                 'short_description' => 'required|string|max:255',
                 'price' => 'required|numeric|min:0',
                 'discount_price' => 'nullable|numeric|min:0',
-                'image_url' => 'required|url',
+                'main_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'image_url' => 'nullable|url',
+                'screenshot_files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'screenshots' => 'nullable|array',
                 'screenshots.*' => 'nullable|string|url',
                 'genres' => 'required|array|min:1',
@@ -124,18 +150,56 @@ class AdminDashboardController extends Controller
                 'user_rating' => 'required|numeric|min:0|max:5',
             ]);
 
-            $screenshots = array_filter($validated['screenshots'] ?? [], function($value) {
-                return !empty(trim($value));
-            });
+            if ($request->hasFile('main_image')) {
+                if ($game->image_url && str_contains($game->image_url, '/uploads/')) {
+                    $oldPath = str_replace('/uploads/', '', $game->image_url);
+                    Storage::disk('public')->delete($oldPath);
+                }
+                
+                $path = $request->file('main_image')->store('games', 'public');
+                $validated['image_url'] = '/uploads/' . $path;
+            } elseif ($validated['image_url']) {
+                
+            } else {
+                $validated['image_url'] = $game->image_url;
+            }
+
+            $screenshots = [];
             
+            // Process uploaded files
+            if ($request->hasFile('screenshot_files')) {
+                foreach ($game->screenshots ?? [] as $screenshot) {
+                    if (str_contains($screenshot, '/uploads/')) {
+                        $oldPath = str_replace('/uploads/', '', $screenshot);
+                        Storage::disk('public')->delete($oldPath);
+                    }
+                }
+                
+                foreach ($request->file('screenshot_files') as $file) {
+                    $path = $file->store('games/screenshots', 'public');
+                    $screenshots[] = '/uploads/' . $path;
+                }
+            } else {
+                // Process URL screenshots or keep current
+                if ($request->has('screenshots')) {
+                    $urlScreenshots = array_filter($validated['screenshots'] ?? [], function($value) {
+                        return !empty(trim($value));
+                    });
+                    $screenshots = $urlScreenshots;
+                } else {
+                    $screenshots = $game->screenshots ?? [];
+                }
+            }
+
+            // Process other data
             $genres = array_filter($validated['genres'], function($value) {
                 return !empty(trim($value));
             });
 
             if (empty($genres)) {
                 return redirect()->back()
-                            ->withErrors(['genres' => 'At least one genre is required.'])
-                            ->withInput();
+                               ->withErrors(['genres' => 'At least one genre is required.'])
+                               ->withInput();
             }
 
             $validated['screenshots'] = array_values($screenshots);
@@ -157,22 +221,32 @@ class AdminDashboardController extends Controller
 
             return redirect()->route('admin.dashboard')->with('success', 'Game updated successfully!');
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            DB::rollBack();
-            return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
-                        ->withErrors(['error' => 'Failed to update game: ' . $e->getMessage()])
-                        ->withInput();
+                           ->withErrors(['error' => 'Failed to update game: ' . $e->getMessage()])
+                           ->withInput();
         }
     }
 
     public function destroy(Game $game)
     {
         try {
+            if ($game->image_url && str_contains($game->image_url, '/uploads/')) {
+                $oldPath = str_replace('/uploads/', '', $game->image_url);
+                Storage::disk('public')->delete($oldPath);
+            }
+
+            foreach ($game->screenshots ?? [] as $screenshot) {
+                if (str_contains($screenshot, '/uploads/')) {
+                    $oldPath = str_replace('/uploads/', '', $screenshot);
+                    Storage::disk('public')->delete($oldPath);
+                }
+            }
+
             $gameTitle = $game->title;
             $game->delete();
+            
             return redirect()->route('admin.dashboard')->with('success', 'Game "' . $gameTitle . '" deleted successfully!');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'Failed to delete game: ' . $e->getMessage()]);
